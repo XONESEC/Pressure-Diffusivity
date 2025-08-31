@@ -1,5 +1,4 @@
-# Pressure-Diffusivity
-Pressure Diffusivity with PDE Method
+# Pressure Diffusivity with PDE Method
 
 In this section, the user is asked to input the values of variables that have been determined. The required variables are:
 * **Porosity**            = the percentage of the total rock volume consisting of pore space or open space (fraction)
