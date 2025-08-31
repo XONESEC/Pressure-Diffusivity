@@ -148,7 +148,7 @@ fig, ax = plt.subplots(figsize=(10, 8))
 
 for i in range(0, nt+1):
     color = plt.cm.magma(i/nt)
-    ax.plot(data[i], color= color)
+    ax.plot(Result[i], color= color)
 
 ax.set_xlabel('Number of Sections')
 ax.set_ylabel('Pressure')
@@ -192,4 +192,5 @@ else:
     # Kalau tidak, manual pakai slider
     selected_timestep = st.slider("Select Timestep", min_value=0, max_value=nt-1, value=0, step=1)
     plot_timestep(selected_timestep)
+
 
