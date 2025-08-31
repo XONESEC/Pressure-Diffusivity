@@ -145,25 +145,6 @@ ax.set_title('Pressure Distribution in Reservoir Using PDE Method')
 
 st.pyplot(fig)
 
-# 2D Visualization 
-
-selected_timestep = st.slider("Select Timestep", min_value=0, max_value=nt, value=0, step=1)
-
-pressure_profile = Result[selected_timestep, :].reshape(1, -1)
-
-fig, ax = plt.subplots(figsize=(10, 2))
-img = ax.imshow(pressure_profile, cmap='magma', aspect='auto',
-                extent=[0, Result.shape[1], 0, 1])
-
-cbar = fig.colorbar(img, ax=ax, shrink=1.0, aspect=5)
-cbar.set_label('Pressure (psi)')
-
-ax.set_xlabel('Number of Sections')
-ax.set_yticks([])  
-ax.set_title(f'Pressure Distribution at Timestep {selected_timestep}')
-
-st.pyplot(fig)
-
 # 1D Visualization
 fig, ax = plt.subplots(figsize=(10, 8))
 
@@ -176,3 +157,40 @@ ax.set_ylabel('Pressure')
 ax.set_title('Pressure Distribution in Reservoir Using PDE Method')
 
 st.pyplot(fig)
+
+
+# 2D Visualization 
+import time
+# Sidebar kontrol auto play
+auto_play = st.checkbox("Auto Play", value=False)
+play_speed = st.slider("Play Speed (fps)", 0.1, 2.0, 0.5)
+
+# Tempat kosong untuk plotting
+plot_placeholder = st.empty()
+
+# Fungsi untuk gambar timestep tertentu
+def plot_timestep(selected_timestep):
+    pressure_profile = Result[selected_timestep, :].reshape(1, -1)
+
+    fig, ax = plt.subplots(figsize=(10, 2))
+    img = ax.imshow(pressure_profile, cmap='magma', aspect='auto',
+                    extent=[0, Result.shape[1], 0, 1])
+
+    cbar = fig.colorbar(img, ax=ax, shrink=1.0, aspect=5)
+    cbar.set_label('Pressure (psi)')
+
+    ax.set_xlabel('Number of Sections')
+    ax.set_yticks([])  
+    ax.set_title(f'Pressure Distribution at Timestep {selected_timestep}')
+
+    plot_placeholder.pyplot(fig)
+
+# Kalau Auto Play dicentang → jalan otomatis
+if auto_play:
+    for t in range(nt):
+        plot_timestep(t)
+        time.sleep(play_speed)
+else:
+    # Kalau tidak, manual pakai slider
+    selected_timestep = st.slider("Select Timestep", min_value=0, max_value=nt-1, value=0, step=1)
+    plot_timestep(selected_timestep)
