@@ -3,7 +3,7 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-
+import plotly.graph_objects as go
 #----------------------------------------------------------------------------------------------------------------------
 
 # Pressure Diffusivity
@@ -125,25 +125,23 @@ st.dataframe(Result)
 
 # Visualize Pressure Distribution
 st.subheader("Visualize Pressure Distribution")
-from mpl_toolkits.mplot3d import Axes3D
+x = np.arange(Result.shape[1])  
+y = np.arange(Result.shape[0]) 
+x, y = np.meshgrid(x, y)
 
-data = Result
+fig = go.Figure(data=[go.Surface(z=Result, x=x, y=y, colorscale="Magma")])
 
-x, y = np.meshgrid(np.arange(data.shape[1]), np.arange(data.shape[0]))
+fig.update_layout(
+    scene=dict(
+        xaxis_title="Number of Sections",
+        yaxis_title="Time Step",
+        zaxis_title="Pressure",
+    ),
+    autosize=True,
+    height=700,
+)
 
-fig= plt.figure(figsize=(10,15))
-ax = fig.add_subplot(111, projection='3d')
-surf = ax.plot_surface(x, y, data, cmap='magma')
-
-cbar = fig.colorbar(surf, ax=ax, shrink=0.5, aspect=10)
-cbar.set_label('Pressure')
-
-ax.set_xlabel('Number of Sections')
-ax.set_ylabel('Time Step')
-ax.set_zlabel('Pressure')
-ax.set_title('Pressure Distribution in Reservoir Using PDE Method')
-
-st.pyplot(fig)
+st.plotly_chart(fig, use_container_width=True)
 
 # 1D Visualization
 fig, ax = plt.subplots(figsize=(10, 8))
@@ -194,3 +192,4 @@ else:
     # Kalau tidak, manual pakai slider
     selected_timestep = st.slider("Select Timestep", min_value=0, max_value=nt-1, value=0, step=1)
     plot_timestep(selected_timestep)
+
