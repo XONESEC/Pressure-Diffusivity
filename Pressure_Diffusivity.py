@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
+import plotly.express as px
+import time
 #----------------------------------------------------------------------------------------------------------------------
 
 # Pressure Diffusivity
@@ -144,29 +146,33 @@ fig.update_layout(
 st.plotly_chart(fig, use_container_width=True)
 
 # 1D Visualization
-fig, ax = plt.subplots(figsize=(10, 8))
+df = pd.DataFrame(Result.T)
+df.index.name = "Section"
+df = df.reset_index().melt(id_vars="Section", var_name="Timestep", value_name="Pressure")
 
-for i in range(0, nt+1):
-    color = plt.cm.magma(i/nt)
-    ax.plot(Result[i], color= color)
+fig = px.line(
+    df,
+    x="Section",
+    y="Pressure",
+    color="Timestep",
+    hover_data={"Section": True, "Pressure": True, "Timestep": True}
+)
 
-ax.set_xlabel('Number of Sections')
-ax.set_ylabel('Pressure')
-ax.set_title('Pressure Distribution in Reservoir Using PDE Method')
+fig.update_layout(
+    xaxis_title="Number of Sections",
+    yaxis_title="Pressure",
+    legend_title="Timestep",
+    height=600
+)
 
-st.pyplot(fig)
-
+st.plotly_chart(fig, use_container_width=True)
 
 # 2D Visualization 
-import time
-# Sidebar kontrol auto play
 auto_play = st.checkbox("Auto Play", value=False)
 play_speed = st.slider("Play Speed (fps)", 0.1, 2.0, 0.5)
 
-# Tempat kosong untuk plotting
 plot_placeholder = st.empty()
 
-# Fungsi untuk gambar timestep tertentu
 def plot_timestep(selected_timestep):
     pressure_profile = Result[selected_timestep, :].reshape(1, -1)
 
@@ -183,14 +189,13 @@ def plot_timestep(selected_timestep):
 
     plot_placeholder.pyplot(fig)
 
-# Kalau Auto Play dicentang → jalan otomatis
 if auto_play:
     for t in range(nt):
         plot_timestep(t)
         time.sleep(play_speed)
 else:
-    # Kalau tidak, manual pakai slider
     selected_timestep = st.slider("Select Timestep", min_value=0, max_value=nt-1, value=0, step=1)
     plot_timestep(selected_timestep)
+
 
 
